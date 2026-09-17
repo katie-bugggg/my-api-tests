@@ -1,0 +1,31 @@
+name: Automated API Tests
+
+# Правила запуска тестов
+on:
+  # 1. Запуск по расписанию (каждый день в 23:00 по UTC / 02:00 по Москве)
+  schedule:
+    - cron: '0 23 * * *'
+  
+  # 2. Позволяет запускать тесты вручную кнопкой на сайте (для отладки)
+  workflow_dispatch:
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest # Выделяем чистый сервер на Linux
+
+    steps:
+      - name: 📥 Скачиваем код из репозитория
+        uses: actions/checkout@v4
+
+      - name: 🐍 Устанавливаем Python
+        uses: actions/actions-setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Устанавливаем библиотеки из нашего рецепта
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🚀 Запускаем тесты через Pytest
+        run: pytest test_api_e2e.py -v
